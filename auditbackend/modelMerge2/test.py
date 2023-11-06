@@ -1,7 +1,7 @@
 import pandas as pd
 
-from FanZhongDuan.function.DataFrameComparator import DataFrameComparator
-from FanZhongDuan.function.DataFrameMerger import DataFrameMerger
+from auditbackend.function.DataFrameComparator import DataFrameComparator
+from auditbackend.function.DataFrameMerger import DataFrameMerger
 
 # 使用你的 DataFrameMerger 和 DataFrameComparator 定义
 
