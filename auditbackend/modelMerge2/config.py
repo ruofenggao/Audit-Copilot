@@ -3,8 +3,8 @@
 # 文件路径配置
 
 # 数据文件路径
-AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/重点数据大全/根据集团匹配出的问题数据DM/集团DM在库已激活.xlsx', ]
-COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/重点数据大全/1008集团出出来的数据/模型10-终端库存合规性.xlsx']
+AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/功能测试数据.xlsx', ]
+COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/功能测试数据2.xlsx']
 
 # 输入类型
 AUDIT_INPUT_MODE = 'single'
@@ -15,8 +15,8 @@ INPUT_TYPE = 'excel'
 OUTPUT_TYPE = 'excel'
 
 # 对比的列名 - 现在它们是列表
-TARGET_COLUMNS = ['IMEI']
-COMPARE_COLUMNS = ['串号_SERBUN']
+TARGET_COLUMNS = ['C1']
+COMPARE_COLUMNS = ['L1']
 
 FILTER_RESULT = 'all'  # 'none' | 'true' | 'f
 
