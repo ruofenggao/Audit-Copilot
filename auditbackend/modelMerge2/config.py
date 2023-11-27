@@ -3,8 +3,8 @@
 # 文件路径配置
 
 # 数据文件路径
-AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/功能测试数据.xlsx', ]
-COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/功能测试数据2.xlsx']
+AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/销售中TAC码未在库的手机.xlsx', ]
+COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/机套匹配酬金全量.xlsx']
 
 # 输入类型
 AUDIT_INPUT_MODE = 'single'
@@ -15,8 +15,8 @@ INPUT_TYPE = 'excel'
 OUTPUT_TYPE = 'excel'
 
 # 对比的列名 - 现在它们是列表
-TARGET_COLUMNS = ['C1']
-COMPARE_COLUMNS = ['L1']
+TARGET_COLUMNS = ['终端串码']
+COMPARE_COLUMNS = ['串码']
 
 FILTER_RESULT = 'all'  # 'none' | 'true' | 'f
 
@@ -26,3 +26,6 @@ FILTER_RESULT = 'all'  # 'none' | 'true' | 'f
 
 # 输出文件的前缀
 OUTPUT_PATH_PREFIX = "/Users/ruofenggao/Desktop/outputExcel/temp_"
+
+# 合并模式: 'sheets' 或 'excels'
+CONCAT_MODE = 'sheets'  # 或 'excels'

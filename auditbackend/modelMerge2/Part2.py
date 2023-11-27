@@ -1,7 +1,7 @@
 import time
-from auditbackend.function.DataFrameComparator import DataFrameComparator
-from auditbackend.inputOutput.DataOutputBase import DataOutputBase
-from auditbackend.inputOutput.DataInputBase import DataInputBase
+from auditbackend.function.dataFrame_comparator import DataFrameComparator
+from auditbackend.inputOutput.data_output_base import DataOutputBase
+from auditbackend.inputOutput.data_input_base import DataInputBase
 import config
 
 start_time = time.time()
