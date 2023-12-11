@@ -3,8 +3,8 @@
 # 文件路径配置
 
 # 数据文件路径
-AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/销售中TAC码未在库的手机.xlsx', ]
-COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/机套匹配酬金全量.xlsx']
+AUDIT_DATA_PATHS = ['/Users/ruofenggao/Desktop/模型10-终端库存合规性.xlsx', ]
+COMPARE_DATA_PATHS = ['/Users/ruofenggao/Desktop/12.3销售加活动全量+主副串码+酬金.xlsx']
 
 # 输入类型
 AUDIT_INPUT_MODE = 'single'
@@ -15,8 +15,8 @@ INPUT_TYPE = 'excel'
 OUTPUT_TYPE = 'excel'
 
 # 对比的列名 - 现在它们是列表
-TARGET_COLUMNS = ['终端串码']
-COMPARE_COLUMNS = ['串码']
+TARGET_COLUMNS = ['串号_SERBUN']
+COMPARE_COLUMNS = ['IMEI']
 
 FILTER_RESULT = 'all'  # 'none' | 'true' | 'f
 
