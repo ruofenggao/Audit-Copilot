@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import filedialog
+from PyQt5 import QtWidgets, QtCore
 import os
 import xlrd
 from xlutils.copy import copy
@@ -53,14 +52,7 @@ class SheetProcessor:
 class SheetProcessorFor对照表一(SheetProcessor):
     def __init__(self):
         super().__init__('对照表一')
-        self.formulas_last_row = {8: 'D{}*E{}', 19: 'L{}*O{}'}  # 特殊公式：第8列和第19列最后一行的计算
-    def calculate_last_row(self, sheet, ws, formulas, rb):
-        # 计算最后一行的特殊公式
-        for col_index, formula in formulas.items():
-            xf_index = sheet.cell_xf_index(sheet.nrows - 1, col_index)
-            xf_obj = rb.xf_list[xf_index]
-            style = create_style(xf_obj, rb)
-            ws.write(sheet.nrows - 1, col_index, Formula(formula.format(sheet.nrows)), style)
+
 
 # 对照表二的处理类
 class SheetProcessorFor对照表二(SheetProcessor):
@@ -72,68 +64,78 @@ class SheetProcessorFor对照表二(SheetProcessor):
 class SheetProcessorFor对照表三甲(SheetProcessor):
     def __init__(self):
         super().__init__('对照表三甲')
-        self.formulas = {7: 'E{}*F{}', 18: 'L{}*O{}'}  # 覆盖默认公式
-        self.formulas_last_row = {8: 'D{}*E{}', 19: 'L{}*O{}'}  # 特殊公式：第8列和第19列最后一行的计算# 计算特殊公式
 
-    def calculate_last_row(self, sheet, ws, formulas, rb):
-        # 计算最后一行的特殊公式
-        for col_index, formula in formulas.items():
-            xf_index = sheet.cell_xf_index(sheet.nrows - 1, col_index)
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
+
+        # 在第8列写入公式，并在最后一行写入总和
+        self.write_formulas(sheet, ws, 3, sheet.nrows, 7, rb)
+
+    def write_formulas(self, sheet, ws, start_row, end_row, column_number, rb):
+        for row_index in range(start_row, end_row):
+            xf_index = sheet.cell_xf_index(row_index, column_number)
             xf_obj = rb.xf_list[xf_index]
             style = create_style(xf_obj, rb)
-            ws.write(sheet.nrows - 1, col_index, Formula(formula.format(sheet.nrows)), style)
+
+            # 写入第8列的计算公式
+            formula = f'E{row_index + 1}*F{row_index + 1}'
+            ws.write(row_index, column_number, Formula(formula), style)
+
+        # 在倒数第二行后一行（即最后一行）写入总和公式
+        # 注意：计算总和时不包括最后一行，以避免循环引用
+        sum_formula = f'SUM(H4:H{end_row - 1})'
+        ws.write(end_row - 1, column_number, Formula(sum_formula), style)
+
+
+
+
 
 # GUI界面
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.folder_selected = None
-        self.center_window(400, 300)  # 调整窗口大小
-        self.create_widgets()
-        self.pack(expand=True)
-        self.info_label = tk.Label(self, text="")
-        self.info_label.pack(side="top", fill="x", expand=True)
+class Application(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-    def center_window(self, width, height):
-        # 获取屏幕尺寸以计算布局参数，使窗口居中
-        screen_width = self.master.winfo_screenwidth()
-        screen_height = self.master.winfo_screenheight()
+    def initUI(self):
+        self.setGeometry(300, 300, 400, 300)
+        self.setWindowTitle('文件处理')
 
-        # 计算X和Y坐标
-        x = (screen_width - width) // 2
-        y = (screen_height - height) // 2
+        self.folder_path_label = QtWidgets.QLabel("未选择文件夹", self)
+        self.folder_path_label.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.master.geometry(f'{width}x{height}+{x}+{y}')
+        self.select_folder_button = QtWidgets.QPushButton("选择文件夹", self)
+        self.select_folder_button.clicked.connect(self.select_folder)
 
-    def create_widgets(self):
-        # 新增的标签，用于显示选定的文件夹路径
-        self.folder_path_label = tk.Label(self, text="未选择文件夹")  # 创建 Label 对象
-        self.folder_path_label.pack(side="top", fill="x", expand=True)  # 使用 pack 方法
+        self.start_button = QtWidgets.QPushButton("开始处理", self)
+        self.start_button.clicked.connect(self.process_files)
 
-        self.select_folder_button = tk.Button(self)
-        self.select_folder_button["text"] = "选择文件夹"
-        self.select_folder_button["command"] = self.select_folder
-        self.select_folder_button.pack(side="top", fill="x", expand=True, padx=20, pady=10)
+        self.info_label = QtWidgets.QLabel("", self)
+        self.info_label.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.start_button = tk.Button(self)
-        self.start_button["text"] = "开始处理"
-        self.start_button["command"] = self.process_files
-        self.start_button.pack(side="top", fill="x", expand=True, padx=20, pady=10)
+        self.quit_button = QtWidgets.QPushButton("退出", self)
+        self.quit_button.clicked.connect(QtWidgets.qApp.quit)
 
-        self.quit = tk.Button(self, text="退出", fg="red", command=self.master.destroy)
-        self.quit.pack(side="bottom", fill="x", expand=True, padx=20, pady=10)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.folder_path_label)
+        layout.addWidget(self.select_folder_button)
+        layout.addWidget(self.start_button)
+        layout.addWidget(self.info_label)
+        layout.addWidget(self.quit_button)
+
+        self.setLayout(layout)
 
     def select_folder(self):
-        self.folder_selected = filedialog.askdirectory()
+        default_path = os.path.expanduser('~')  # 获取用户的主目录作为默认路径
+        self.folder_selected = QtWidgets.QFileDialog.getExistingDirectory(self, "选择文件夹", default_path)
         if self.folder_selected:
-            self.folder_path_label["text"] = self.folder_selected
-            self.info_label["text"] = "文件夹已选择"
+            self.folder_path_label.setText(self.folder_selected)
+            self.info_label.setText("文件夹已选择")
         else:
-            self.folder_path_label["text"] = "未选择文件夹"
-            self.info_label["text"] = ""
+            self.folder_path_label.setText("未选择文件夹")
+            self.info_label.setText("")
 
-    # 在 process_files 方法中更新 Label 文本
     def process_files(self):
         if hasattr(self, 'folder_selected') and self.folder_selected:
             for file in os.listdir(self.folder_selected):
@@ -143,16 +145,18 @@ class Application(tk.Frame):
                         SheetProcessorFor对照表一(),
                         SheetProcessorFor对照表二(),
                         SheetProcessorFor对照表三甲()
-                        # 添加其他 sheet 处理类...
+                        # ... [添加其他 sheet 处理类] ...
                     ]
                     try:
                         process_workbook(file_path, sheet_processors)
-                        self.info_label["text"] = f"{file} 处理完成"
+                        self.info_label.setText(f"{file} 处理完成")
                     except Exception as e:
-                        self.info_label["text"] = f"{file} 处理失败: {e}"
+                        self.info_label.setText(f"{file} 处理失败: {e}")
             print("Processing completed.")
         else:
-            self.info_label["text"] = "未选择文件夹"
+            self.info_label.setText("未选择文件夹")
+
+# ... [其他函数和类定义，例如 SheetProcessorFor对照表一 等] ...
 
 def process_workbook(file_path, sheet_processors):
     try:
@@ -167,7 +171,11 @@ def process_workbook(file_path, sheet_processors):
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
 
-# 运行程序
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
+def main():
+    app = QtWidgets.QApplication([])
+    ex = Application()
+    ex.show()
+    app.exec_()
+
+if __name__ == '__main__':
+    main()
