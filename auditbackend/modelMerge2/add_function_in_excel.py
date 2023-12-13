@@ -70,25 +70,27 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
-        # 在第8列写入公式，并在最后一行写入总和
-        self.write_formulas(sheet, ws, 3, sheet.nrows, 7, rb)
+        # 处理 Q 列 (索引为 16)，N列*O列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 16, 'N{}*O{}', True, rb)
 
-    def write_formulas(self, sheet, ws, start_row, end_row, column_number, rb):
-        for row_index in range(start_row, end_row):
+        # 处理 I 列 (索引为 8)，E列*G列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 8, 'E{}*G{}', True, rb)
+
+        # ... 添加其他列的处理 ...
+
+    def write_formula_and_sum(self, sheet, ws, start_row, end_row, column_number, formula_pattern, include_sum, rb):
+        for row_index in range(start_row, end_row - 1):
             xf_index = sheet.cell_xf_index(row_index, column_number)
             xf_obj = rb.xf_list[xf_index]
             style = create_style(xf_obj, rb)
 
-            # 写入第8列的计算公式
-            formula = f'E{row_index + 1}*F{row_index + 1}'
+            formula = formula_pattern.format(row_index + 1, row_index + 1)
             ws.write(row_index, column_number, Formula(formula), style)
 
-        # 在倒数第二行后一行（即最后一行）写入总和公式
-        # 注意：计算总和时不包括最后一行，以避免循环引用
-        sum_formula = f'SUM(H4:H{end_row - 1})'
-        ws.write(end_row - 1, column_number, Formula(sum_formula), style)
-
-
+        # 如果需要，添加总和公式
+        if include_sum and end_row - start_row > 0:
+            sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
+            ws.write(end_row - 1, column_number, Formula(sum_formula), style)
 
 
 
