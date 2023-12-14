@@ -48,6 +48,19 @@ class SheetProcessor:
         ws = wb.get_sheet(ws_index)
         write_formulas(sheet, ws, self.formulas, rb)
 
+    def write_formula_and_sum(self, sheet, ws, start_row, end_row, column_number, formula_pattern, include_sum, rb):
+        for row_index in range(start_row, end_row - 1):
+            xf_index = sheet.cell_xf_index(row_index, column_number)
+            xf_obj = rb.xf_list[xf_index]
+            style = create_style(xf_obj, rb)
+
+            formula = formula_pattern.format(row_index + 1, row_index + 1)
+            ws.write(row_index, column_number, Formula(formula), style)
+
+        # 如果需要，添加总和公式
+        if include_sum and end_row - start_row > 0:
+            sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
+            ws.write(end_row - 1, column_number, Formula(sum_formula), style)
 # 对照表一的处理类
 class SheetProcessorFor对照表一(SheetProcessor):
     def __init__(self):
@@ -78,19 +91,7 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
 
         # ... 添加其他列的处理 ...
 
-    def write_formula_and_sum(self, sheet, ws, start_row, end_row, column_number, formula_pattern, include_sum, rb):
-        for row_index in range(start_row, end_row - 1):
-            xf_index = sheet.cell_xf_index(row_index, column_number)
-            xf_obj = rb.xf_list[xf_index]
-            style = create_style(xf_obj, rb)
 
-            formula = formula_pattern.format(row_index + 1, row_index + 1)
-            ws.write(row_index, column_number, Formula(formula), style)
-
-        # 如果需要，添加总和公式
-        if include_sum and end_row - start_row > 0:
-            sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
-            ws.write(end_row - 1, column_number, Formula(sum_formula), style)
 
 
 
@@ -138,8 +139,12 @@ class Application(QtWidgets.QWidget):
             self.folder_path_label.setText("未选择文件夹")
             self.info_label.setText("")
 
+
+
     def process_files(self):
         if hasattr(self, 'folder_selected') and self.folder_selected:
+            processed_files = []  # 用于跟踪所有处理过的文件
+
             for file in os.listdir(self.folder_selected):
                 if file.endswith(".xls") or file.endswith(".xlsx"):
                     file_path = os.path.join(self.folder_selected, file)
@@ -151,12 +156,21 @@ class Application(QtWidgets.QWidget):
                     ]
                     try:
                         process_workbook(file_path, sheet_processors)
-                        self.info_label.setText(f"{file} 处理完成")
+                        processed_files.append(file)  # 添加文件到已处理列表
                     except Exception as e:
                         self.info_label.setText(f"{file} 处理失败: {e}")
-            print("Processing completed.")
+
+            if processed_files:
+                processed_files_str = "\n".join(processed_files)
+                self.info_label.setText(f"以下文件已处理完成:\n{processed_files_str}")
+            else:
+                self.info_label.setText("未找到可处理的 Excel 文件")
+
         else:
             self.info_label.setText("未选择文件夹")
+
+    # ... [其他函数和类定义，例如 SheetProcessorFor对照表一 等] ...
+
 
 # ... [其他函数和类定义，例如 SheetProcessorFor对照表一 等] ...
 
