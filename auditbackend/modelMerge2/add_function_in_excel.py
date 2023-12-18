@@ -83,16 +83,18 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
+        # 处理 S 列 (索引为 18)，N列*O列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 18, 'Q{}-H{}', True, rb)
+        # 处理 T 列 (索引为 19)，N列*O列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 19, 'R{}-I{}', True, rb)
         # 处理 Q 列 (索引为 16)，N列*O列，包含总和
         self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 16, 'N{}*O{}', True, rb)
-
+        # 处理 R 列 (索引为 17)，N列*O列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 17, 'N{}*P{}', True, rb)
         # 处理 I 列 (索引为 8)，E列*G列，包含总和
         self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 8, 'E{}*G{}', True, rb)
-
-        # ... 添加其他列的处理 ...
-
-
-
+        # 处理 H 列 (索引为 7)，E列*G列，包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 7, 'E{}*F{}', True, rb)
 
 
 # GUI界面
