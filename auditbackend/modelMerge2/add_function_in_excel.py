@@ -4,6 +4,7 @@ import xlrd
 from xlutils.copy import copy
 from xlwt import XFStyle, Font, Borders, Formula
 
+
 # 根据单元格格式对象和读取的工作簿对象创建样式
 def create_style(xf_obj, rb):
     style = XFStyle()
@@ -27,6 +28,7 @@ def create_style(xf_obj, rb):
 
     return style
 
+
 # 在指定工作表中写入公式
 def write_formulas(sheet, ws, formulas, rb):
     for row_index in range(sheet.nrows):
@@ -35,6 +37,7 @@ def write_formulas(sheet, ws, formulas, rb):
             xf_obj = rb.xf_list[xf_index]
             style = create_style(xf_obj, rb)
             ws.write(row_index, col_index, Formula(formula.format(row_index + 1)), style)
+
 
 # 处理单个工作簿的基类
 class SheetProcessor:
@@ -52,15 +55,19 @@ class SheetProcessor:
         for row_index in range(start_row, end_row - 1):
             xf_index = sheet.cell_xf_index(row_index, column_number)
             xf_obj = rb.xf_list[xf_index]
-            style = create_style(xf_obj, rb)
+            style = create_style(xf_obj, rb)  # 在循环内定义style
 
             formula = formula_pattern.format(row_index + 1, row_index + 1)
             ws.write(row_index, column_number, Formula(formula), style)
 
         # 如果需要，添加总和公式
         if include_sum and end_row - start_row > 0:
+            xf_index = sheet.cell_xf_index(end_row - 1, column_number)  # 重新获取style
+            xf_obj = rb.xf_list[xf_index]
+            style = create_style(xf_obj, rb)
             sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
             ws.write(end_row - 1, column_number, Formula(sum_formula), style)
+
 
 # 对照表四甲（设备）的处理类暂时没有
 class SheetProcessorFor对照表四甲设备(SheetProcessor):
@@ -72,6 +79,7 @@ class SheetProcessorFor对照表四甲设备(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
+
 # 对照表四甲材料的处理类
 class SheetProcessorFor对照表四甲材料(SheetProcessor):
     def __init__(self):
@@ -81,6 +89,7 @@ class SheetProcessorFor对照表四甲材料(SheetProcessor):
         sheet = rb.sheet_by_name(self.sheet_name)
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
+
 
 # 对照表三丙的处理类
 class SheetProcessorFor对照表三丙(SheetProcessor):
@@ -92,6 +101,7 @@ class SheetProcessorFor对照表三丙(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
+
 # 对照表三乙的处理类
 class SheetProcessorFor对照表三乙(SheetProcessor):
     def __init__(self):
@@ -101,6 +111,18 @@ class SheetProcessorFor对照表三乙(SheetProcessor):
         sheet = rb.sheet_by_name(self.sheet_name)
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
+
+        # 处理 U 列 (索引为 20)，T列*J列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 20, 'T{}*J{}', True, rb)
+        # 处理 J 列 (索引为 9)，H列*I列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 9, 'H{}*I{}', True, rb)
+        # 处理 I 列 (索引为 8)，E列*G列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 8, 'E{}*G{}', False, rb)
+        # 处理 T 列 (索引为 19)，R列*S列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 19, 'R{}*S{}', True, rb)
+        # 处理 S 列 (索引为 18)，Q列*O列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 18, 'Q{}*O{}', False, rb)
+
 
 # 对照表三甲的处理类
 class SheetProcessorFor对照表三甲(SheetProcessor):
@@ -125,6 +147,7 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
         # 处理 H 列 (索引为 7)，E列*G列，包含总和
         self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 7, 'E{}*F{}', True, rb)
 
+
 # 对照表一的处理类
 class SheetProcessorFor对照表一(SheetProcessor):
     def __init__(self):
@@ -135,6 +158,7 @@ class SheetProcessorFor对照表一(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
+
 # 对照表二的处理类
 class SheetProcessorFor对照表二(SheetProcessor):
     def __init__(self):
@@ -144,6 +168,8 @@ class SheetProcessorFor对照表二(SheetProcessor):
         sheet = rb.sheet_by_name(self.sheet_name)
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
+
+
 # GUI界面
 class Application(QtWidgets.QWidget):
     def __init__(self):
@@ -187,8 +213,6 @@ class Application(QtWidgets.QWidget):
         else:
             self.folder_path_label.setText("未选择文件夹")
             self.info_label.setText("")
-
-
 
     def process_files(self):
         if hasattr(self, 'folder_selected') and self.folder_selected:
@@ -240,11 +264,13 @@ def process_workbook(file_path, sheet_processors):
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
 
+
 def main():
     app = QtWidgets.QApplication([])
     ex = Application()
     ex.show()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
