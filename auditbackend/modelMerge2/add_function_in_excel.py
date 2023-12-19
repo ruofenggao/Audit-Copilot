@@ -61,17 +61,46 @@ class SheetProcessor:
         if include_sum and end_row - start_row > 0:
             sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
             ws.write(end_row - 1, column_number, Formula(sum_formula), style)
-# 对照表一的处理类
-class SheetProcessorFor对照表一(SheetProcessor):
-    def __init__(self):
-        super().__init__('对照表一')
 
-
-# 对照表二的处理类
-class SheetProcessorFor对照表二(SheetProcessor):
+# 对照表四甲（设备）的处理类暂时没有
+class SheetProcessorFor对照表四甲设备(SheetProcessor):
     def __init__(self):
-        super().__init__('对照表二')
-        # 添加对照表二特殊公式...
+        super().__init__('对照表四甲（设备）')
+
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
+
+# 对照表四甲材料的处理类
+class SheetProcessorFor对照表四甲材料(SheetProcessor):
+    def __init__(self):
+        super().__init__('对照表四甲（材料）')
+
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
+
+# 对照表三丙的处理类
+class SheetProcessorFor对照表三丙(SheetProcessor):
+    def __init__(self):
+        super().__init__('对照表三丙')
+
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
+
+# 对照表三乙的处理类
+class SheetProcessorFor对照表三乙(SheetProcessor):
+    def __init__(self):
+        super().__init__('对照表三乙')
+
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
 
 # 对照表三甲的处理类
 class SheetProcessorFor对照表三甲(SheetProcessor):
@@ -96,7 +125,25 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
         # 处理 H 列 (索引为 7)，E列*G列，包含总和
         self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 7, 'E{}*F{}', True, rb)
 
+# 对照表一的处理类
+class SheetProcessorFor对照表一(SheetProcessor):
+    def __init__(self):
+        super().__init__('对照表一')
 
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
+
+# 对照表二的处理类
+class SheetProcessorFor对照表二(SheetProcessor):
+    def __init__(self):
+        super().__init__('对照表二')
+
+    def process_sheet(self, rb, wb):
+        sheet = rb.sheet_by_name(self.sheet_name)
+        ws_index = rb.sheet_names().index(self.sheet_name)
+        ws = wb.get_sheet(ws_index)
 # GUI界面
 class Application(QtWidgets.QWidget):
     def __init__(self):
@@ -151,9 +198,13 @@ class Application(QtWidgets.QWidget):
                 if file.endswith(".xls") or file.endswith(".xlsx"):
                     file_path = os.path.join(self.folder_selected, file)
                     sheet_processors = [
+                        SheetProcessorFor对照表三丙(),
+                        SheetProcessorFor对照表三乙(),
+                        SheetProcessorFor对照表三甲(),
+                        SheetProcessorFor对照表四甲材料(),
+                        SheetProcessorFor对照表四甲设备(),
                         SheetProcessorFor对照表一(),
-                        SheetProcessorFor对照表二(),
-                        SheetProcessorFor对照表三甲()
+                        SheetProcessorFor对照表二()
                         # ... [添加其他 sheet 处理类] ...
                     ]
                     try:
