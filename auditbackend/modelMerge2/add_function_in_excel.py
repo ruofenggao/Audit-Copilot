@@ -108,6 +108,17 @@ class SheetProcessorForBing(SheetProcessor):
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
 
+        # 处理 U 列 (索引为 20)，T列*J列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 20, 'T{}*J{}', True, rb)
+        # 处理 J 列 (索引为 9)，H列*I列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 9, 'H{}*I{}', True, rb)
+        # 处理 I 列 (索引为 8)，E列*G列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 8, 'E{}*G{}', False, rb)
+        # 处理 T 列 (索引为 19)，R列*S列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 19, 'R{}*S{}', True, rb)
+        # 处理 S 列 (索引为 18)，Q列*O列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 18, 'Q{}*O{}', False, rb)
+
 
 # 对照表三乙的处理类
 class SheetProcessorForYi(SheetProcessor):
@@ -120,15 +131,15 @@ class SheetProcessorForYi(SheetProcessor):
         ws = wb.get_sheet(ws_index)
 
         # 处理 U 列 (索引为 20)，T列*J列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 20, 'T{}*J{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 20, 'T{}*J{}', True, rb)
         # 处理 J 列 (索引为 9)，H列*I列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 9, 'H{}*I{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 9, 'H{}*I{}', True, rb)
         # 处理 I 列 (索引为 8)，E列*G列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 8, 'E{}*G{}', False, rb)
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 8, 'E{}*G{}', False, rb)
         # 处理 T 列 (索引为 19)，R列*S列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 19, 'R{}*S{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 19, 'R{}*S{}', True, rb)
         # 处理 S 列 (索引为 18)，Q列*O列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 18, 'Q{}*O{}', False, rb)
+        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 18, 'Q{}*O{}', False, rb)
 
 
 # 对照表三甲的处理类
