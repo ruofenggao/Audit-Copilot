@@ -80,6 +80,8 @@ class SheetProcessorFor对照表四甲设备(SheetProcessor):
         ws = wb.get_sheet(ws_index)
 
 
+
+
 # 对照表四甲材料的处理类
 class SheetProcessorFor对照表四甲材料(SheetProcessor):
     def __init__(self):
@@ -89,6 +91,13 @@ class SheetProcessorFor对照表四甲材料(SheetProcessor):
         sheet = rb.sheet_by_name(self.sheet_name)
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
+
+        # 处理 U 列 (索引为 20)，T列*J列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 18, 'H{}*Q{}', True, rb)
+        # 处理 H 列 (索引为 7)，F列*G列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 7, 'F{}*G{}', True, rb)
+        # 处理 Q 列 (索引为 16)，O列*P列，不包含总和
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 16, 'O{}*P{}', True, rb)
 
 
 # 对照表三丙的处理类
@@ -113,15 +122,15 @@ class SheetProcessorFor对照表三乙(SheetProcessor):
         ws = wb.get_sheet(ws_index)
 
         # 处理 U 列 (索引为 20)，T列*J列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 20, 'T{}*J{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 20, 'T{}*J{}', True, rb)
         # 处理 J 列 (索引为 9)，H列*I列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 9, 'H{}*I{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 9, 'H{}*I{}', True, rb)
         # 处理 I 列 (索引为 8)，E列*G列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 8, 'E{}*G{}', False, rb)
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 8, 'E{}*G{}', False, rb)
         # 处理 T 列 (索引为 19)，R列*S列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 19, 'R{}*S{}', True, rb)
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 19, 'R{}*S{}', True, rb)
         # 处理 S 列 (索引为 18)，Q列*O列，不包含总和
-        self.write_formula_and_sum(sheet, ws, 4, sheet.nrows, 18, 'Q{}*O{}', False, rb)
+        self.write_formula_and_sum(sheet, ws, 3, sheet.nrows, 18, 'Q{}*O{}', False, rb)
 
 
 # 对照表三甲的处理类
