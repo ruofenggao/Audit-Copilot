@@ -70,7 +70,7 @@ class SheetProcessor:
 
 
 # 对照表四甲（设备）的处理类暂时没有
-class SheetProcessorFor对照表四甲设备(SheetProcessor):
+class SheetProcessorForJiaSB(SheetProcessor):
     def __init__(self):
         super().__init__('对照表四甲（设备）')
 
@@ -80,10 +80,8 @@ class SheetProcessorFor对照表四甲设备(SheetProcessor):
         ws = wb.get_sheet(ws_index)
 
 
-
-
 # 对照表四甲材料的处理类
-class SheetProcessorFor对照表四甲材料(SheetProcessor):
+class SheetProcessorForJiaCL(SheetProcessor):
     def __init__(self):
         super().__init__('对照表四甲（材料）')
 
@@ -101,7 +99,7 @@ class SheetProcessorFor对照表四甲材料(SheetProcessor):
 
 
 # 对照表三丙的处理类
-class SheetProcessorFor对照表三丙(SheetProcessor):
+class SheetProcessorForBing(SheetProcessor):
     def __init__(self):
         super().__init__('对照表三丙')
 
@@ -112,7 +110,7 @@ class SheetProcessorFor对照表三丙(SheetProcessor):
 
 
 # 对照表三乙的处理类
-class SheetProcessorFor对照表三乙(SheetProcessor):
+class SheetProcessorForYi(SheetProcessor):
     def __init__(self):
         super().__init__('对照表三乙')
 
@@ -134,7 +132,7 @@ class SheetProcessorFor对照表三乙(SheetProcessor):
 
 
 # 对照表三甲的处理类
-class SheetProcessorFor对照表三甲(SheetProcessor):
+class SheetProcessorForJia(SheetProcessor):
     def __init__(self):
         super().__init__('对照表三甲')
 
@@ -158,7 +156,7 @@ class SheetProcessorFor对照表三甲(SheetProcessor):
 
 
 # 对照表一的处理类
-class SheetProcessorFor对照表一(SheetProcessor):
+class SheetProcessorForForm1(SheetProcessor):
     def __init__(self):
         super().__init__('对照表一')
 
@@ -169,7 +167,7 @@ class SheetProcessorFor对照表一(SheetProcessor):
 
 
 # 对照表二的处理类
-class SheetProcessorFor对照表二(SheetProcessor):
+class SheetProcessorForForm2(SheetProcessor):
     def __init__(self):
         super().__init__('对照表二')
 
@@ -231,13 +229,13 @@ class Application(QtWidgets.QWidget):
                 if file.endswith(".xls") or file.endswith(".xlsx"):
                     file_path = os.path.join(self.folder_selected, file)
                     sheet_processors = [
-                        SheetProcessorFor对照表三丙(),
-                        SheetProcessorFor对照表三乙(),
-                        SheetProcessorFor对照表三甲(),
-                        SheetProcessorFor对照表四甲材料(),
-                        SheetProcessorFor对照表四甲设备(),
-                        SheetProcessorFor对照表一(),
-                        SheetProcessorFor对照表二()
+                        SheetProcessorForBing(),
+                        SheetProcessorForYi(),
+                        SheetProcessorForJia(),
+                        SheetProcessorForJiaCL(),
+                        SheetProcessorForJiaSB(),
+                        SheetProcessorForForm1(),
+                        SheetProcessorForForm2()
                         # ... [添加其他 sheet 处理类] ...
                     ]
                     try:
