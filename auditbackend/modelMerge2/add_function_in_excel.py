@@ -67,7 +67,35 @@ class SheetProcessor:
             style = create_style(xf_obj, rb)
             sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
             ws.write(end_row - 1, column_number, Formula(sum_formula), style)
+    def insert_specific_formula(self, ws, row, col, formula, rb):
+        """
+        在指定单元格插入公式。
+        :param ws: 当前工作表对象
+        :param row: 行号（从0开始）
+        :param col: 列号（从0开始）
+        :param formula: 公式字符串
+        :param rb: 工作簿读取对象
+        """
+        xf_index = ws.cell_xf_index(row, col)
+        xf_obj = rb.xf_list[xf_index]
+        style = create_style(xf_obj, rb)
+        ws.write(row, col, Formula(formula), style)
 
+    # class SheetProcessorForForm1(SheetProcessor):
+    #     def __init__(self):
+    #         super().__init__('对照表一')
+    #
+    #     def process_sheet(self, rb, wb):
+    #         sheet = rb.sheet_by_name(self.sheet_name)
+    #         ws_index = rb.sheet_names().index(self.sheet_name)
+    #         ws = wb.get_sheet(ws_index)
+    #
+    #         # 在 B2 插入跨工作表引用公式
+    #         self.insert_formula(ws, 1, 1, '对照表三乙!J13*D4', rb)
+    #         # 在 C3 插入累加公式
+    #         self.insert_formula(ws, 2, 2, '=E9+E10', rb)
+    #         # 在 D4 插入范围求和公式
+    #         self.insert_formula(ws, 3, 3, '=SUM(E17:E31)', rb)
 
 # 对照表四甲（设备）的处理类暂时没有
 class SheetProcessorForJiaSB(SheetProcessor):
