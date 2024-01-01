@@ -67,35 +67,40 @@ class SheetProcessor:
             style = create_style(xf_obj, rb)
             sum_formula = f'SUM({chr(65 + column_number)}4:{chr(65 + column_number)}{end_row - 1})'
             ws.write(end_row - 1, column_number, Formula(sum_formula), style)
-    def insert_specific_formula(self, ws, row, col, formula, rb):
+
+    def insert_specific_formula(self, ws, rb_sheet, row, col, formula, rb):
         """
         在指定单元格插入公式。
-        :param ws: 当前工作表对象
+        :param ws: 当前工作表对象（用于写入，xlwt库）
+        :param rb_sheet: 读取的工作表对象（用于获取格式，xlrd库）
         :param row: 行号（从0开始）
         :param col: 列号（从0开始）
         :param formula: 公式字符串
-        :param rb: 工作簿读取对象
+        :param rb: 工作簿读取对象（xlrd库）
         """
-        xf_index = ws.cell_xf_index(row, col)
+        xf_index = rb_sheet.cell_xf_index(row, col)
         xf_obj = rb.xf_list[xf_index]
         style = create_style(xf_obj, rb)
         ws.write(row, col, Formula(formula), style)
 
-    # class SheetProcessorForForm1(SheetProcessor):
-    #     def __init__(self):
-    #         super().__init__('对照表一')
-    #
-    #     def process_sheet(self, rb, wb):
-    #         sheet = rb.sheet_by_name(self.sheet_name)
-    #         ws_index = rb.sheet_names().index(self.sheet_name)
-    #         ws = wb.get_sheet(ws_index)
-    #
-    #         # 在 B2 插入跨工作表引用公式
-    #         self.insert_formula(ws, 1, 1, '对照表三乙!J13*D4', rb)
-    #         # 在 C3 插入累加公式
-    #         self.insert_formula(ws, 2, 2, '=E9+E10', rb)
-    #         # 在 D4 插入范围求和公式
-    #         self.insert_formula(ws, 3, 3, '=SUM(E17:E31)', rb)
+    def sum_value_range(self, ws, rb_sheet, sum_start_row, sum_end_row, sum_column, target_row, target_col, rb):
+        """
+        在指定单元格插入求和公式。
+        :param ws: 当前工作表对象（用于写入，xlwt库）
+        :param rb_sheet: 读取的工作表对象（用于获取格式，xlrd库）
+        :param sum_start_row: 求和范围的起始行号（从0开始）
+        :param sum_end_row: 求和范围的结束行号（从0开始）
+        :param sum_column: 求和范围的列号（从0开始）
+        :param target_row: 目标行号（公式所在的单元格，从0开始）
+        :param target_col: 目标列号（公式所在的单元格，从0开始）
+        :param rb: 工作簿读取对象（xlrd库）
+        """
+        formula = f'SUM({chr(65 + sum_column)}{sum_start_row + 1}:{chr(65 + sum_column)}{sum_end_row + 1})'
+        xf_index = rb_sheet.cell_xf_index(target_row, target_col)
+        xf_obj = rb.xf_list[xf_index]
+        style = create_style(xf_obj, rb)
+        ws.write(target_row, target_col, Formula(formula), style)
+
 
 # 对照表四甲（设备）的处理类暂时没有
 class SheetProcessorForJiaSB(SheetProcessor):
@@ -211,9 +216,15 @@ class SheetProcessorForForm2(SheetProcessor):
         super().__init__('对照表二')
 
     def process_sheet(self, rb, wb):
-        sheet = rb.sheet_by_name(self.sheet_name)
+        rb_sheet = rb.sheet_by_name(self.sheet_name)
         ws_index = rb.sheet_names().index(self.sheet_name)
         ws = wb.get_sheet(ws_index)
+
+        self.insert_specific_formula(ws, rb_sheet, 1, 1, '对照表三甲!S17*VALUE(D4)', rb)
+        self.insert_specific_formula(ws, rb_sheet, 2, 2, 'E9+E10', rb)
+        # 假设你想在 E 列的第 32 行插入一个公式，该公式对 E17:E31 范围内的单元格求和
+        self.sum_value_range(ws, rb_sheet, 16, 31, 4, 33, 5, rb)  # 在 F34（第34行第6列）插入公式 SUM(E17:E31)
+         # 在 E32（即第32行第5列）插入公式 SUM(E17:E31)
 
 
 # GUI界面
@@ -292,10 +303,6 @@ class Application(QtWidgets.QWidget):
         else:
             self.info_label.setText("未选择文件夹")
 
-    # ... [其他函数和类定义，例如 SheetProcessorFor对照表一 等] ...
-
-
-# ... [其他函数和类定义，例如 SheetProcessorFor对照表一 等] ...
 
 def process_workbook(file_path, sheet_processors):
     try:
